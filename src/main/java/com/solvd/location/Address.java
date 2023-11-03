@@ -7,6 +7,8 @@ public class Address {
     private int zipCode;
     private String country;
 
+    public Address(){}
+
     public Address(String streetLine, String state, String city, int zipCode, String country) {
         this.streetLine = streetLine;
         this.state = state;
@@ -53,5 +55,10 @@ public class Address {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @Override
+    public String toString(){
+        return "{\"Street Line\" : " + streetLine + ", \"State\" : " + state + ", \"City\" : " + city + ", \"Zip Code\" : " + zipCode + ", \"Country\" : " + country + "}";
     }
 }

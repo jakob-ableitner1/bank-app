@@ -36,4 +36,9 @@ public class BankBranch {
     public void setBranchNumber(int branchNumber) {
         this.branchNumber = branchNumber;
     }
+
+    @Override
+    public String toString(){
+        return "{\"Address\" : " + address + ", \"Phone Number\" : " + phoneNumber + ", \"Branch Number\" : " + phoneNumber + "}";
+    }
 }
