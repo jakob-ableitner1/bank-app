@@ -1,4 +1,4 @@
-package com.solvd.branch;
+package com.solvd.building;
 
 import com.solvd.location.Address;
 

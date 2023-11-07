@@ -33,6 +33,6 @@ public class EmployeeProfile extends Profile {
 
     @Override
     public String toString(){
-        return "{\"Name\" : " + name + ", \"Id\" : " + id + ", \"Password\" : " + password + ", \"Job Title\" : " + jobTitle + ", \"Wage\" : " + wage.toString() + "}";
+        return "{\"Name\" : " + super.getName() + ", \"Id\" : " + super.getId() + ", \"Password\" : " + super.getPassword() + ", \"Address\" : " + super.getAddress().toString() + ", \"Job Title\" : " + jobTitle + ", \"Wage\" : " + wage.toString() + "}";
     }
 }

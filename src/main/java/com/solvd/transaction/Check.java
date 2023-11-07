@@ -11,8 +11,9 @@ public class Check extends Transaction{
 
     @Override
     public void performTransaction() {
-        if(fromAccount.withdrawal(amount)){
-            toAccount.deposit(amount);
+        if(super.getFromAccount().withdrawal(super.getAmount())){
+            super.getToAccount().deposit(super.getAmount());
+            System.out.println("Check has been cashed");
         }
     }
 }

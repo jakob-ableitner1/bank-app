@@ -4,23 +4,30 @@ import com.solvd.account.Account;
 import com.solvd.account.CheckingAccount;
 import com.solvd.account.SavingsAccount;
 import com.solvd.location.Address;
+import com.solvd.menu.*;
 import com.solvd.profile.MemberProfile;
+import com.solvd.profile.Profile;
 import com.solvd.transaction.AccountMoneyTransfer;
 import com.solvd.transaction.Transaction;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class App {
-    private static Scanner scanner = new Scanner(System.in);
+
+    static IMenu startMenu = new StartMenu();
+    static IMenu startMemberMenu = new StartMemberMenu();
+    static IMenu signInMenu = new SignInMenu();
+    static IMenu memberMenu = new MemberMenu();
 
     public static void main(String[] args){
 
         //Prepopulate data
         MemberProfile member1 = new MemberProfile("Jakob Ableitner", "jableitn", "pw");
-        Account checkingAccount = new CheckingAccount(123, member1, BigDecimal.valueOf(500));
-        Account savingsAccount =  new SavingsAccount(111, member1, BigDecimal.valueOf(1400));
+        Account checkingAccount = new CheckingAccount(123, BigDecimal.valueOf(500));
+        Account savingsAccount =  new SavingsAccount(111, BigDecimal.valueOf(1400));
         member1.setAccounts(new Account[]{checkingAccount, savingsAccount});
         member1.setAddress(new Address("Jakob's street", "CA", "San Diego", 33032, "USA"));
 
@@ -28,46 +35,34 @@ public class App {
         MemberProfile member3 = new MemberProfile("Bob Cook", "bcook", "bobspw");
         MemberProfile[] members = {member1, member2, member3};
 
-        boolean hasTerminitedApp = false;
-
-        while (!hasTerminitedApp)  {
-
-            System.out.println("Bank Member - option 0\nEmployee. Not implemented yet. - option 1\nQuit - option 2");
-//            System.out.println("Employee. Not implemented yet. - option 1");
-//            System.out.println("Quit - option 2");
-            int input = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (input) {
+        boolean exitMenu = false;
+        while (!exitMenu){
+            int input = Integer.parseInt(startMenu.getInput()[0]);
+            switch (input){
                 case 0:
                     memberSignInMenu(members);
                     continue;
-//                case 1:
-//                    employeeMenu();
+                case 1:
+                    memberSignInMenu(members);
                 case 2:
-                    hasTerminitedApp = true;
-                    System.out.println("Leaving application. Goodbye");
+                    exitMenu = true;
                     continue;
                 default:
-                    System.out.println("This input is unvalid");
+                    System.out.println("Invalid input");
             }
         }
     }
 
-    public static void memberSignInMenu(com.solvd.profile.MemberProfile[] members){
+    public static void memberSignInMenu(MemberProfile[] members){
+
         boolean hasTerminatedMenu = false;
 
         while (!hasTerminatedMenu){
-            System.out.println("Current Member - option 0\nQuit - option 1");
-            int input = scanner.nextInt();
-            scanner.nextLine();
-
+            int input = Integer.parseInt(startMemberMenu.getInput()[0]);
             switch (input){
                 case 0:
-                    System.out.println("enter username");
-                    String username = scanner.nextLine();
-                    System.out.println("enter password");
-                    String password = scanner.nextLine();
+                    String username = signInMenu.getInput()[0];
+                    String password = signInMenu.getInput()[1];
                     MemberProfile member = findMember(members, username, password);
 
                     if(member != null){
@@ -100,9 +95,7 @@ public class App {
         boolean loggedIn = true;
 
         while (loggedIn){
-            System.out.println("Change Address - option 0\nView Profile Details - option 1\nView Account Details - option 2\nTransfer Money - option 3\nLog Out - option 4");
-            int input = scanner.nextInt();
-            scanner.nextLine();
+            int input = Integer.parseInt(memberMenu.getInput()[0]);
 
             switch(input){
                 case 0:
@@ -126,15 +119,10 @@ public class App {
         }
     }
 
-    public static void changeAddress(MemberProfile member){
-        System.out.println("Enter the values for the following fields and press the enter button after each value: Street Line, State, City, Zip Code, Country");
-        String streetLine = scanner.nextLine();
-        String state = scanner.nextLine();
-        String city = scanner.nextLine();
-        int zipCode = scanner.nextInt();
-        scanner.nextLine();
-        String country = scanner.nextLine();
-        member.setAddress(new Address(streetLine, state, city, zipCode,country));
+    public static void changeAddress(Profile profile){
+        IMenu changeAddressMenu = new ChangeAddressMenu();
+        String[] addressValues = changeAddressMenu.getInput();
+        profile.setAddress(new Address(addressValues[0], addressValues[1], addressValues[2], Integer.parseInt(addressValues[3]),addressValues[4]));
     }
 
     public static void transferMoney(MemberProfile member){
@@ -144,14 +132,11 @@ public class App {
                 System.out.println("Account: " + accounts[i].toString() + ", Balance: " + accounts[i].getBalance() + " - option " + i);
             }
         }
-        System.out.println("Which account would you like to transfer from?");
-        int fromAccountIndex = scanner.nextInt();
-        System.out.println("Which account would you like to transfer to?");
-        int toAccountIndex = scanner.nextInt();
-        System.out.println("How much money would you like to transfer?");
-        BigDecimal amount = BigDecimal.valueOf(scanner.nextDouble());
 
-        Transaction accountMoneyTransfer = new AccountMoneyTransfer(accounts[fromAccountIndex], accounts[toAccountIndex], amount);
+        IMenu transferMoneyMenu = new TransferMoneyMenu();
+        String[] moneyTransferValues = transferMoneyMenu.getInput();
+
+        Transaction accountMoneyTransfer = new AccountMoneyTransfer(accounts[Integer.parseInt(moneyTransferValues[0])], accounts[Integer.parseInt(moneyTransferValues[1])], BigDecimal.valueOf(Double.parseDouble(moneyTransferValues[2])));
         accountMoneyTransfer.performTransaction();
     }
 }

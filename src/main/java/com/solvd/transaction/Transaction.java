@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public abstract class Transaction {
-    protected Account fromAccount;
-    protected Account toAccount;
-    protected BigDecimal amount;
+    private Account fromAccount;
+    private Account toAccount;
+    private BigDecimal amount;
 
     public Transaction(Account fromAccount, Account toAccount, BigDecimal amount) {
         this.fromAccount = fromAccount;

@@ -11,11 +11,12 @@ public class AccountMoneyTransfer extends Transaction{
 
     @Override
     public void performTransaction() {
-        if (fromAccount.getMemberProfile().getId() == toAccount.getMemberProfile().getId()){
-            if(fromAccount.withdrawal(amount)){
-                toAccount.deposit(amount);
-            }
+
+        if(super.getFromAccount().withdrawal(super.getAmount())){
+            super.getToAccount().deposit(super.getAmount());
+            System.out.println("Money transfer completed");
         }
+
     }
 }
 

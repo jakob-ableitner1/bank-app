@@ -5,14 +5,12 @@ import com.solvd.profile.MemberProfile;
 import java.math.BigDecimal;
 
 public abstract class Account {
-    protected int accountNumber;
-    protected MemberProfile memberProfile;
-    protected BigDecimal balance;
+    private int accountNumber;
+    private BigDecimal balance;
 
 
-    public Account(int accountNumber, MemberProfile memberProfile, BigDecimal balance) {
+    public Account(int accountNumber, BigDecimal balance) {
         this.accountNumber = accountNumber;
-        this.memberProfile = memberProfile;
         this.balance = balance;
     }
 
@@ -22,14 +20,6 @@ public abstract class Account {
 
     public void setAccountNumber(int accountNumber) {
         this.accountNumber = accountNumber;
-    }
-
-    public MemberProfile getMemberProfile() {
-        return memberProfile;
-    }
-
-    public void setMemberProfile(MemberProfile memberProfile) {
-        this.memberProfile = memberProfile;
     }
 
     public BigDecimal getBalance() {

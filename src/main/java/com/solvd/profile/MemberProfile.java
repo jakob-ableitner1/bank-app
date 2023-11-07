@@ -9,20 +9,11 @@ import java.util.Arrays;
 public class MemberProfile extends Profile {
 
     private int maxNumberOfAccounts = 5;
-    private Address address = new Address();
 
     private Account[] accounts = new Account[maxNumberOfAccounts];
 
     public MemberProfile(String name, String id, String password) {
         super(name, id, password);
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
     }
 
     public Account[] getAccounts() {
@@ -40,6 +31,6 @@ public class MemberProfile extends Profile {
 
     @Override
     public String toString(){
-      return "{\"Name\" : " + name + ", \"Id\" : " + id + ", \"Password\" : " + password + ", \"Address\" : " + address.toString() + ", \"Accounts\" : " + Arrays.toString(accounts)+ "}";
-    }
+      return "{\"Name\" : " + super.getName() + ", \"Id\" : " + super.getId() + ", \"Password\" : " + super.getPassword() + ", \"Address\" : " + super.getAddress().toString() + ", \"Accounts\" : " + Arrays.toString(accounts)+ "}";
+     }
 }
