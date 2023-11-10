@@ -1,18 +1,21 @@
 package com.solvd.transaction;
 
 import com.solvd.account.Account;
-import jdk.swing.interop.SwingInterOpUtils;
+import com.solvd.exception.NegativeTransferAmountException;
+import com.solvd.exception.OverdraftException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.xml.transform.Source;
 import java.math.BigDecimal;
 
-public class BillPay implements Payable{
+public class BillPay implements Payable {
 
-    Account fromAccount;
-    String toAccountNumber;
-    BigDecimal amount;
-    String frequency;
-    String details;
+    private static final Logger LOGGER = LogManager.getLogger(BillPay.class);
+    private Account fromAccount;
+    private String toAccountNumber;
+    private BigDecimal amount;
+    private String frequency;
+    private String details;
 
     public BillPay(Account fromAccount, String toAccountNumber, BigDecimal amount, String frequency, String details) {
         this.fromAccount = fromAccount;
@@ -63,19 +66,24 @@ public class BillPay implements Payable{
     }
 
     @Override
-    public void pay(BigDecimal payment) {
+    public void pay(BigDecimal payment) throws NegativeTransferAmountException, OverdraftException {
+
+        if (payment.compareTo(BigDecimal.ZERO) < 0) {
+            throw new NegativeTransferAmountException("Payment amount cannot be negative");
+        }
+
 //        if(amountPayed.add(payment).compareTo(totalAmount) >= 0 && accountFrom.getBalance().subtract(payment).compareTo(BigDecimal.ZERO) >= 0){
 //            accountFrom.deposit(payment);
 //            amountPayed = amountPayed.add(payment);
 //        } else{
-//            System.out.println("This amount is larger than remaining balance");
+//            LOGGER.info("This amount is larger than remaining balance");
 //        }
 
-        System.out.println("Amount Payed");
+        LOGGER.info("Amount Payed");
     }
 
     public void viewPaymentDetails() {
-//        System.out.println("Loan Principal: " + loanPrincipal + ", Interest: " + interest + ", Term: " + termYears + " years, Total Amount: " + totalAmount + ", Amount Payed: " + amountPayed);
-        System.out.println("Bill Pay details");
+//        LOGGER.info("Loan Principal: " + loanPrincipal + ", Interest: " + interest + ", Term: " + termYears + " years, Total Amount: " + totalAmount + ", Amount Payed: " + amountPayed);
+        LOGGER.info("Bill Pay details");
     }
 }

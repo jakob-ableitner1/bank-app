@@ -1,19 +1,23 @@
 package com.solvd.transaction;
 
 import com.solvd.account.Account;
+import com.solvd.exception.NegativeTransferAmountException;
+import com.solvd.exception.OverdraftException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.security.Principal;
 
-public class Loan implements Payable{
+public class Loan implements Payable {
 
-    Account accountFrom;
-    String loanType;
-    BigDecimal loanPrincipal;
-    BigDecimal interest;
-    int termYears;
-    BigDecimal totalAmount;
-    BigDecimal amountPayed;
+    private static final Logger LOGGER = LogManager.getLogger(Loan.class);
+    private Account accountFrom;
+    private String loanType;
+    private BigDecimal loanPrincipal;
+    private BigDecimal interest;
+    private int termYears;
+    private BigDecimal totalAmount;
+    private BigDecimal amountPayed;
 
     public Loan(Account accountFrom, String loanType, BigDecimal loanPrincipal, BigDecimal interest, int termYears) {
         this.accountFrom = accountFrom;
@@ -65,17 +69,19 @@ public class Loan implements Payable{
     }
 
     @Override
-    public void pay(BigDecimal payment) {
-        if(amountPayed.add(payment).compareTo(totalAmount) >= 0 && accountFrom.getBalance().subtract(payment).compareTo(BigDecimal.ZERO) >= 0){
+    public void pay(BigDecimal payment) throws NegativeTransferAmountException, OverdraftException {
+        if (amountPayed.add(payment).compareTo(totalAmount) >= 0 && accountFrom.getBalance().subtract(payment).compareTo(BigDecimal.ZERO) >= 0) {
             accountFrom.deposit(payment);
             amountPayed = amountPayed.add(payment);
-        } else{
-            System.out.println("This amount is larger than remaining balance");
+        } else if (amountPayed.add(payment).compareTo(totalAmount) < 0) {
+            throw new NegativeTransferAmountException("Payment amount is negative");
+        } else if (accountFrom.getBalance().subtract(payment).compareTo(BigDecimal.ZERO) < 0) {
+            throw new OverdraftException("Payment is greater than remaining balance");
         }
     }
 
     @Override
     public void viewPaymentDetails() {
-        System.out.println("Loan Type: " + loanType + "Loan Principal: " + loanPrincipal + ", Interest: " + interest + ", Term: " + termYears + " years, Total Amount: " + totalAmount + ", Amount Payed: " + amountPayed);
+        LOGGER.info("Loan Type: " + loanType + "Loan Principal: " + loanPrincipal + ", Interest: " + interest + ", Term: " + termYears + " years, Total Amount: " + totalAmount + ", Amount Payed: " + amountPayed);
     }
 }

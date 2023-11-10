@@ -1,33 +1,34 @@
 package com.solvd.account;
 
+import com.solvd.exception.OverdraftException;
 import com.solvd.profile.MemberProfile;
 
 import java.math.BigDecimal;
 
-public class CheckingAccount extends Account{
+public class CheckingAccount extends Account {
 
     private final static String ACCOUNT_TYPE = "Checking";
+
     public CheckingAccount(int accountNumber, BigDecimal balance) {
         super(accountNumber, balance);
     }
 
-    public static String getAccountType(){
+    public static String getAccountType() {
         return ACCOUNT_TYPE;
     }
 
     @Override
-    public boolean withdrawal(BigDecimal amount) {
-        if(super.getBalance().subtract(amount).signum() >= 0){
+    public boolean withdrawal(BigDecimal amount) throws OverdraftException {
+        if (super.getBalance().subtract(amount).signum() >= 0) {
             super.setBalance(super.getBalance().subtract(amount));
             return true;
         } else {
-            System.out.println("Not enough funds in account " + super.getAccountNumber());
-            return false;
+            throw new OverdraftException("This amount is more than the current balance");
         }
     }
 
     @Override
-    public String toString(){
-        return "{\"Account Number\" : " + super.getAccountNumber()  + ", \"Balance\" : " + super.getBalance() + ", \"Account Type\" : " + ACCOUNT_TYPE + "}";
+    public String toString() {
+        return "{\"Account Number\" : " + super.getAccountNumber() + ", \"Balance\" : " + super.getBalance() + ", \"Account Type\" : " + ACCOUNT_TYPE + "}";
     }
 }

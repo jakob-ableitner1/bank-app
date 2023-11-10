@@ -1,20 +1,25 @@
 package com.solvd.account;
 
+import com.solvd.App;
 import com.solvd.location.Address;
 import com.solvd.profile.MemberProfile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 
-public class SavingsAccount extends Account{
+public class SavingsAccount extends Account {
 
-    private final static String ACCOUNT_TYPE = "Savings";
+    private static final Logger LOGGER = LogManager.getLogger(SavingsAccount.class);
+    private static final String ACCOUNT_TYPE = "Savings";
     private int monthlyWithdrawalsRemaining;
+
     public SavingsAccount(int accountNumber, BigDecimal balance) {
         super(accountNumber, balance);
         this.monthlyWithdrawalsRemaining = 5;
     }
 
-    public static String getAccountType(){
+    public static String getAccountType() {
         return ACCOUNT_TYPE;
     }
 
@@ -28,21 +33,21 @@ public class SavingsAccount extends Account{
 
     @Override
     public boolean withdrawal(BigDecimal amount) {
-        if(super.getBalance().subtract(amount).signum() >= 0 && monthlyWithdrawalsRemaining > 0){
+        if (super.getBalance().subtract(amount).signum() >= 0 && monthlyWithdrawalsRemaining > 0) {
             super.setBalance(super.getBalance().subtract(amount));
             monthlyWithdrawalsRemaining--;
             return true;
         } else if (monthlyWithdrawalsRemaining > 0) {
-            System.out.println("Not enough funds in account " + super.getAccountNumber());
+            LOGGER.info("Not enough funds in account " + super.getAccountNumber());
             return false;
         } else {
-            System.out.println("Monthly withdrawal limit exceeded");
+            LOGGER.info("Monthly withdrawal limit exceeded");
             return false;
         }
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "{\"Account Number\" : " + super.getAccountNumber() + ", \"Balance\" : " + super.getBalance() + ", \"Monthly Withdrawals Remaining\" : " + monthlyWithdrawalsRemaining + ", \"Account Type\" : " + ACCOUNT_TYPE + "}";
     }
 }

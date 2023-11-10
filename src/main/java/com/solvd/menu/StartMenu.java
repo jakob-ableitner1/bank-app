@@ -8,7 +8,7 @@ public class StartMenu implements IMenu {
 
     @Override
     public String[] getInput() {
-        System.out.println("Bank Member - option 0\nEmployee. Not implemented yet. - option 1\nQuit - option 2");
+        LOGGER.info("Log in - option 0\nQuit - option 1");
         String input = scanner.nextLine();
         return new String[]{input};
     }

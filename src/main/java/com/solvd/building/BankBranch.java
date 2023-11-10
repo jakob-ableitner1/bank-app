@@ -1,5 +1,6 @@
 package com.solvd.building;
 
+import com.solvd.exception.PhoneNumberException;
 import com.solvd.location.Address;
 
 public class BankBranch {
@@ -7,7 +8,12 @@ public class BankBranch {
     private String phoneNumber;
     private int branchNumber;
 
-    public BankBranch(Address address, String phoneNumber, int branchNumber) {
+    public BankBranch(Address address, String phoneNumber, int branchNumber) throws PhoneNumberException {
+
+        if (phoneNumber.length() != 10) {
+            throw new PhoneNumberException("Phone number is not the correct length");
+        }
+
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.branchNumber = branchNumber;
@@ -38,7 +44,7 @@ public class BankBranch {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "{\"Address\" : " + address + ", \"Phone Number\" : " + phoneNumber + ", \"Branch Number\" : " + phoneNumber + "}";
     }
 }

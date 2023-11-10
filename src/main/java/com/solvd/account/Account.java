@@ -1,6 +1,9 @@
 package com.solvd.account;
 
+import com.solvd.exception.OverdraftException;
 import com.solvd.profile.MemberProfile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 
@@ -30,10 +33,12 @@ public abstract class Account {
         this.balance = balance;
     }
 
-    public void deposit(BigDecimal amount){
+
+    public void deposit(BigDecimal amount) {
         balance = balance.add(amount);
     }
 
-    public abstract boolean withdrawal(BigDecimal amount);
+    public abstract boolean withdrawal(BigDecimal amount) throws OverdraftException;
+
     public abstract String toString();
 }

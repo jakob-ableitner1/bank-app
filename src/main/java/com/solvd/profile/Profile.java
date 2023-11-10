@@ -1,28 +1,49 @@
 package com.solvd.profile;
 
+import com.solvd.exception.NegativeAgeException;
 import com.solvd.location.Address;
-import com.solvd.search.Searchable;
 
-public abstract class Profile implements Searchable {
-    private static Profile[] profiles = new Profile[20];
+public abstract class Profile {
+    private static int numberOfProfiles = 1;
     private String name;
-    private String id;
+    private int id;
+    private String username;
     private String password;
+    private int age;
     private Address address;
 
-    public Profile(String name, String id, String password) {
+    public Profile(String name, String username, String password, int age, Address address) {
         this.name = name;
-        this.id = id;
+        this.id = numberOfProfiles;
+        this.username = username;
         this.password = password;
-        addToProfilesArray();
+        this.age = age;
+        this.address = address;
+
+        numberOfProfiles++;
     }
 
-    public static Profile[] getProfiles() {
-        return profiles;
+    public Profile(String name, String username, String password, int age) throws NegativeAgeException {
+        this.name = name;
+        this.id = numberOfProfiles;
+        this.username = username;
+        this.password = password;
+
+        if (age >= 0) {
+            this.age = age;
+        } else {
+            throw new NegativeAgeException("Age cannot be set to a negative value");
+        }
+
+        numberOfProfiles++;
     }
 
-    public static void setProfiles(Profile[] profiles) {
-        Profile.profiles = profiles;
+    public static int getNumberOfProfiles() {
+        return numberOfProfiles;
+    }
+
+    public static void setNumberOfProfiles(int numberOfProfiles) {
+        Profile.numberOfProfiles = numberOfProfiles;
     }
 
     public String getName() {
@@ -33,12 +54,20 @@ public abstract class Profile implements Searchable {
         this.name = name;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -53,30 +82,20 @@ public abstract class Profile implements Searchable {
         return address;
     }
 
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) throws NegativeAgeException {
+        if (age >= 0) {
+            this.age = age;
+        } else {
+            throw new NegativeAgeException("Age cannot be set to a negative value");
+        }
+    }
+
     public void setAddress(Address address) {
         this.address = address;
-    }
-
-    public void addToProfilesArray(){
-        for (Profile p : profiles){
-            if (p == null){
-                p = this;
-                break;
-            }
-        }
-    }
-
-    public Searchable search(String value){
-        for (Profile p : profiles){
-            if (value.equals(p.id)){
-                return p;
-            }
-        }
-        return null;
-    }
-
-    public void viewAll(){
-
     }
 
     public abstract void profileHelp();
