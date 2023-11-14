@@ -5,14 +5,15 @@ import com.solvd.profile.Profile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Set;
+
 public class ProfileSearch implements ISearch<Profile> {
 
     private static final Logger LOGGER = LogManager.getLogger(ISearch.class);
 
     @Override
-    public Profile[] search(Profile[] profiles, String[] searchValues, String searchType) throws SearchTypeException {
+    public Profile[] search(Set<Profile> profiles, String[] searchValues, String searchType) throws SearchTypeException {
         if ("validation".equals(searchType)) {
-            //exception to see if indexes exist
             String username = searchValues[0];
             String password = searchValues[1];
 
@@ -20,14 +21,13 @@ public class ProfileSearch implements ISearch<Profile> {
                 if (username.equals(profile.getUsername()) && password.equals(profile.getPassword())) {
                     return new Profile[]{profile};
                 } else {
-                    //profile doesn't exist exception
+                    LOGGER.info("This profile doesn't exist");
                 }
                 return null;
             }
 
         } else if ("id".equals(searchType)) {
             int id = Integer.parseInt(searchValues[0]);
-            //not an int exception
 
             for (Profile profile : profiles) {
                 if (id == profile.getId()) {

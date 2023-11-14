@@ -3,9 +3,11 @@ package com.solvd.search;
 import com.solvd.account.Account;
 import com.solvd.exception.SearchTypeException;
 
+import java.util.Set;
+
 public class AccountSearch implements ISearch<Account> {
     @Override
-    public Account[] search(Account[] accounts, String[] searchValues, String searchType) throws SearchTypeException {
+    public Account[] search(Set<Account> accounts, String[] searchValues, String searchType) throws SearchTypeException {
         if ("id".equals(searchType)) {
             int id = Integer.parseInt(searchValues[0]);
 

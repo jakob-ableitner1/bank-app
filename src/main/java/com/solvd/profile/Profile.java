@@ -12,13 +12,18 @@ public abstract class Profile {
     private int age;
     private Address address;
 
-    public Profile(String name, String username, String password, int age, Address address) {
+    public Profile(String name, String username, String password, int age, Address address) throws NegativeAgeException {
         this.name = name;
         this.id = numberOfProfiles;
         this.username = username;
         this.password = password;
-        this.age = age;
         this.address = address;
+
+        if (age >= 0) {
+            this.age = age;
+        } else {
+            throw new NegativeAgeException("Age cannot be set to a negative value");
+        }
 
         numberOfProfiles++;
     }

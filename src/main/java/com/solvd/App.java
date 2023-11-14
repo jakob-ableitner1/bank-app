@@ -3,11 +3,13 @@ package com.solvd;
 import com.solvd.account.Account;
 import com.solvd.account.CheckingAccount;
 import com.solvd.account.SavingsAccount;
+import com.solvd.exception.NegativeAgeException;
 import com.solvd.exception.SearchTypeException;
 import com.solvd.location.Address;
 import com.solvd.menu.*;
 import com.solvd.profile.MemberProfile;
 import com.solvd.profile.Profile;
+import com.solvd.search.AccountSearch;
 import com.solvd.search.ProfileSearch;
 import com.solvd.transaction.AccountMoneyTransfer;
 import com.solvd.transaction.Transaction;
@@ -16,6 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class App {
 
@@ -34,19 +38,27 @@ public class App {
 
         //Prepopulate data
         Address address1 = new Address("1st Street", "MN", "St. paul", 1324, "USA");
-        MemberProfile member1 = new MemberProfile("Jakob Ableitner", "jableitn", "pw", 25, address1);
+
+        MemberProfile member1 = null;
+        try {
+            member1 = new MemberProfile("Jakob Ableitner", "jableitn", "pw", 25, address1);
+        } catch (NegativeAgeException e) {
+            LOGGER.info("Age can't be negative");
+        }
+
         Account checkingAccount = new CheckingAccount(123, BigDecimal.valueOf(500));
         Account savingsAccount = new SavingsAccount(111, BigDecimal.valueOf(1400));
-        member1.setAccounts(new Account[]{checkingAccount, savingsAccount});
+        member1.setAccounts(new HashSet<>(Arrays.asList(checkingAccount, savingsAccount)));
 
-        MemberProfile[] members = {member1};
+        Set<Profile> profiles = new HashSet<>();
+        profiles.add(member1);
 
         boolean exitMenu = false;
         while (!exitMenu) {
             int input = Integer.parseInt(startMenu.getInput()[0]);
             switch (input) {
                 case 0:
-                    memberSignInMenu(members);
+                    memberSignInMenu(profiles);
                     continue;
                 case 1:
                     exitMenu = true;
@@ -57,7 +69,7 @@ public class App {
         }
     }
 
-    public static void memberSignInMenu(MemberProfile[] members) {
+    public static void memberSignInMenu(Set<Profile> profiles) {
 
         boolean hasTerminatedMenu = false;
 
@@ -70,7 +82,7 @@ public class App {
                     String password = credentials[1];
                     Profile profile;
                     try{
-                        profile = profileSearch.search(members, new String[]{username, password}, "validation")[0];
+                        profile = profileSearch.search(profiles, new String[]{username, password}, "validation")[0];
                     } catch (SearchTypeException e){
                         break;
                     }
@@ -83,7 +95,7 @@ public class App {
                     }
                     continue;
                 case 1:
-                    hasTerminatedMenu = true;
+                    createMemberProfile(profiles);
                     continue;
                 case 2:
                     hasTerminatedMenu = true;
@@ -117,7 +129,7 @@ public class App {
                     LOGGER.info(member.toString());
                     continue;
                 case 2:
-                    LOGGER.info(Arrays.toString(member.getAccounts()));
+                    LOGGER.info(member.getAccounts());
                     continue;
                 case 3:
                     transferMoney(member);
@@ -138,18 +150,47 @@ public class App {
     }
 
     public static void transferMoney(MemberProfile member) {
-        Account[] accounts = member.getAccounts();
-        for (int i = 0; i < accounts.length; i++) {
-            if (accounts[i] != null) {
-                LOGGER.info("Account: " + accounts[i].toString() + ", Balance: " + accounts[i].getBalance() + " - option " + i);
+        Set<Account> accounts = member.getAccounts();
+        int optionCount = 0;
+        for (Account account : accounts) {
+            if (account != null) {
+                LOGGER.info("Account: " + account + ", Balance: " + account.getBalance() + " - option " + optionCount);
+                optionCount++;
             }
         }
 
         IMenu transferMoneyMenu = new TransferMoneyMenu();
         String[] moneyTransferValues = transferMoneyMenu.getInput();
 
-        Transaction accountMoneyTransfer = new AccountMoneyTransfer(accounts[Integer.parseInt(moneyTransferValues[0])], accounts[Integer.parseInt(moneyTransferValues[1])], BigDecimal.valueOf(Double.parseDouble(moneyTransferValues[2])));
+        AccountSearch accountSearch = new AccountSearch();
+        Account[] fromAccount = new Account[1];
+        Account[] toAccount = new Account[1];
+
+        try{
+            fromAccount = accountSearch.search(accounts, new String[]{moneyTransferValues[0]},"id");
+            toAccount = accountSearch.search(accounts, new String[]{moneyTransferValues[1]},"id");
+        } catch(SearchTypeException e){
+            LOGGER.error(e);
+        }
+
+        Transaction accountMoneyTransfer = new AccountMoneyTransfer(fromAccount[0], toAccount[0], BigDecimal.valueOf(Double.parseDouble(moneyTransferValues[2])));
         accountMoneyTransfer.performTransaction();
+    }
+
+    public static void createMemberProfile(Set<Profile> profiles){
+        IMenu createMemberProfileMenu = new CreateMemberProfileMenu();
+        IMenu changeAddressMenu = new ChangeAddressMenu();
+
+        String[] input = createMemberProfileMenu.getInput();
+        String[] addressInput = changeAddressMenu.getInput();
+
+        Address address = new Address(addressInput[0], addressInput[1], addressInput[2], Integer.parseInt(addressInput[3]), addressInput[4]);
+
+        try {
+            profiles.add(new MemberProfile(input[0], input[1], input[2], Integer.parseInt(input[3]), address));
+        } catch (NegativeAgeException e){
+            LOGGER.info("Age can't be negative");
+        }
     }
 }
 
