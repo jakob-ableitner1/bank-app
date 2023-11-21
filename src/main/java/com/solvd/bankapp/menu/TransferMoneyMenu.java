@@ -1,9 +1,11 @@
 package com.solvd.bankapp.menu;
 
+import java.util.Scanner;
+
 public class TransferMoneyMenu implements IMenu{
 
     @Override
-    public String[] getInput() {
+    public String[] getInput(Scanner scanner) {
         LOGGER.info("Which account would you like to transfer from?");
         String fromAccountIndex = scanner.nextLine();
         LOGGER.info("Which account would you like to transfer to?");

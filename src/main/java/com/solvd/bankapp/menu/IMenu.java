@@ -7,6 +7,5 @@ import java.util.Scanner;
 
 public interface IMenu {
     Logger LOGGER = LogManager.getLogger(IMenu.class);
-    Scanner scanner = new Scanner(System.in);
-    String[] getInput();
+    String[] getInput(Scanner scanner);
 }

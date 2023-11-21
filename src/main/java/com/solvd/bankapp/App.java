@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 public class App {
@@ -35,47 +36,55 @@ public class App {
     static IMenu memberMenu = new MemberMenu();
 
     public static void main(String[] args) {
-
+        Scanner scanner = new Scanner(System.in);
         Set<Profile> profiles = PrepopulateData.prepopulateProfiles();
 
-        boolean exitMenu = false;
-        while (!exitMenu) {
-            int input = Integer.parseInt(startMenu.getInput()[0]);
-            switch (input) {
-                case 0:
-                    memberSignInMenu(profiles);
-                    continue;
-                case 1:
-                    exitMenu = true;
-                    continue;
-                default:
-                    LOGGER.info("Invalid input");
+        try{
+            boolean exitMenu = false;
+            while (!exitMenu) {
+                int input = Integer.parseInt(startMenu.getInput(scanner)[0]);
+                switch (input) {
+                    case 0:
+                        memberSignInMenu(profiles, scanner);
+                        continue;
+                    case 1:
+                        exitMenu = true;
+                        continue;
+                    default:
+                        LOGGER.info("Invalid input");
+                }
             }
+        } catch (Exception e){
+            System.out.println("error has occured");
+        } finally{
+            scanner.close();
         }
     }
 
-    public static void memberSignInMenu(Set<Profile> profiles) {
+    public static void memberSignInMenu(Set<Profile> profiles, Scanner scanner) {
 
         boolean hasTerminatedMenu = false;
 
         while (!hasTerminatedMenu) {
-            int input = Integer.parseInt(startMemberMenu.getInput()[0]);
+            int input = Integer.parseInt(startMemberMenu.getInput(scanner)[0]);
             switch (input) {
                 case 0:
-                    String[] credentials = signInMenu.getInput();
+                    String[] credentials = signInMenu.getInput(scanner);
                     String username = credentials[0];
                     String password = credentials[1];
                     Profile profile = profileSearch.search(profiles, new String[]{username, password}, "validation")[0];
 
                     if (profile != null) {
                         LOGGER.info("Hello " + profile.getName());
-//                        memberMenu(profile);
+                        if (profile instanceof MemberProfile){
+                            memberMenu((MemberProfile) profile, scanner);
+                        }
                     } else {
                         LOGGER.info("username or password is incorrect");
                     }
                     continue;
                 case 1:
-                    createMemberProfile(profiles);
+                    createMemberProfile(profiles, scanner);
                     continue;
                 case 2:
                     hasTerminatedMenu = true;
@@ -94,16 +103,16 @@ public class App {
         return null;
     }
 
-    public static void memberMenu(MemberProfile member) {
+    public static void memberMenu(MemberProfile member, Scanner scanner) {
 
         boolean loggedIn = true;
 
         while (loggedIn) {
-            int input = Integer.parseInt(memberMenu.getInput()[0]);
+            int input = Integer.parseInt(memberMenu.getInput(scanner)[0]);
 
             switch (input) {
                 case 0:
-                    changeAddress(member);
+                    changeAddress(member, scanner);
                     continue;
                 case 1:
                     LOGGER.info(member.toString());
@@ -112,7 +121,7 @@ public class App {
                     LOGGER.info(member.getAccounts());
                     continue;
                 case 3:
-                    transferMoney(member);
+                    transferMoney(member, scanner);
                     continue;
                 case 4:
                     loggedIn = false;
@@ -123,13 +132,13 @@ public class App {
         }
     }
 
-    public static void changeAddress(Profile profile) {
+    public static void changeAddress(Profile profile, Scanner scanner) {
         IMenu changeAddressMenu = new ChangeAddressMenu();
-        String[] addressValues = changeAddressMenu.getInput();
+        String[] addressValues = changeAddressMenu.getInput(scanner);
         profile.setAddress(new Address(addressValues[0], addressValues[1], addressValues[2], Integer.parseInt(addressValues[3]), addressValues[4]));
     }
 
-    public static void transferMoney(MemberProfile member) {
+    public static void transferMoney(MemberProfile member, Scanner scanner) {
         Set<Account> accounts = member.getAccounts();
         int optionCount = 0;
         for (Account account : accounts) {
@@ -140,7 +149,7 @@ public class App {
         }
 
         IMenu transferMoneyMenu = new TransferMoneyMenu();
-        String[] moneyTransferValues = transferMoneyMenu.getInput();
+        String[] moneyTransferValues = transferMoneyMenu.getInput(scanner);
 
         AccountSearch accountSearch = new AccountSearch();
         Account[] fromAccount = accountSearch.search(accounts, new String[]{moneyTransferValues[0]}, "id");
@@ -150,12 +159,12 @@ public class App {
         accountMoneyTransfer.performTransaction();
     }
 
-    public static void createMemberProfile(Set<Profile> profiles) {
+    public static void createMemberProfile(Set<Profile> profiles, Scanner scanner) {
         IMenu createMemberProfileMenu = new CreateMemberProfileMenu();
         IMenu changeAddressMenu = new ChangeAddressMenu();
 
-        String[] input = createMemberProfileMenu.getInput();
-        String[] addressInput = changeAddressMenu.getInput();
+        String[] input = createMemberProfileMenu.getInput(scanner);
+        String[] addressInput = changeAddressMenu.getInput(scanner);
 
         Address address = new Address(addressInput[0], addressInput[1], addressInput[2], Integer.parseInt(addressInput[3]), addressInput[4]);
 
