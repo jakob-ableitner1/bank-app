@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public class CheckingAccount extends Account {
 
-    private final static String ACCOUNT_TYPE = "Checking";
+    public final static String ACCOUNT_TYPE = "Checking";
 
     public CheckingAccount(int accountNumber, BigDecimal balance) {
         super(accountNumber, balance);

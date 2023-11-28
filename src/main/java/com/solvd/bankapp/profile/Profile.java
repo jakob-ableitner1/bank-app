@@ -40,7 +40,7 @@ public abstract class Profile {
             throw new NegativeAgeException("Age cannot be set to a negative value");
         }
 
-        numberOfProfiles++;
+        numberOfProfiles--;
     }
 
     public static int getNumberOfProfiles() {
