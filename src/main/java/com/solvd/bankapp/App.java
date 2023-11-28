@@ -24,10 +24,6 @@ import java.util.Set;
 
 public class App {
 
-    static {
-        System.setProperty("log4j.configurationFile", "log4j2.xml");
-    }
-
     private static final Logger LOGGER = LogManager.getLogger(App.class);
     private static final ProfileSearch profileSearch = new ProfileSearch();
     static IMenu startMenu = new StartMenu();
