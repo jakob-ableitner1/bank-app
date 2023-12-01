@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Scanner;
 
+@FunctionalInterface
 public interface IMenu {
-    Logger LOGGER = LogManager.getLogger(IMenu.class);
     String[] getInput(Scanner scanner);
 }

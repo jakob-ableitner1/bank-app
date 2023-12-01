@@ -1,27 +1,30 @@
 package com.solvd.bankapp.account;
 
 import com.solvd.bankapp.exception.OverdraftException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public abstract class Account {
-    private int accountNumber;
+
+    public final UUID ACCOUNT_NUMBER;
     private BigDecimal balance;
 
+    {
+        ACCOUNT_NUMBER = UUID.randomUUID();
+    }
 
-    public Account(int accountNumber, BigDecimal balance) {
-        this.accountNumber = accountNumber;
+    public Account(){
+        UUID accountNumber = UUID.randomUUID();
+    }
+
+    public Account(BigDecimal balance) {
         this.balance = balance;
+        UUID accountNumber = UUID.randomUUID();
     }
 
-    public int getAccountNumber() {
-        return accountNumber;
-    }
-
-    public void setAccountNumber(int accountNumber) {
-        this.accountNumber = accountNumber;
+    public UUID getAccountNumber() {
+        return ACCOUNT_NUMBER;
     }
 
     public BigDecimal getBalance() {
@@ -38,6 +41,4 @@ public abstract class Account {
     }
 
     public abstract boolean withdrawal(BigDecimal amount) throws OverdraftException;
-
-    public abstract String toString();
 }

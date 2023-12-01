@@ -11,37 +11,36 @@ import java.math.BigDecimal;
 public class Loan implements Payable {
 
     private static final Logger LOGGER = LogManager.getLogger(Loan.class);
-    private Account accountFrom;
-    private String loanType;
+    private Account account;
+    private LoanType loanType;
     private BigDecimal loanPrincipal;
     private BigDecimal interest;
     private int termYears;
     private BigDecimal totalAmount;
     private BigDecimal amountPayed;
 
-    public Loan(Account accountFrom, String loanType, BigDecimal loanPrincipal, BigDecimal interest, int termYears) {
-        this.accountFrom = accountFrom;
-        this.loanType = loanType;
+    public Loan(){}
+
+    public Loan(Account account, BigDecimal loanPrincipal) {
+        this.account = account;
         this.loanPrincipal = loanPrincipal;
-        this.interest = interest;
-        this.termYears = termYears;
-        this.totalAmount = totalAmount.add(loanPrincipal.multiply(interest).multiply(BigDecimal.valueOf(termYears)));
+        //this.totalAmount = totalAmount.add(loanPrincipal.multiply(interest).multiply(BigDecimal.valueOf(termYears)));
     }
 
 
     public Account getAccountFrom() {
-        return accountFrom;
+        return account;
     }
 
     public void setAccountFrom(Account accountFrom) {
-        this.accountFrom = accountFrom;
+        this.account = accountFrom;
     }
 
-    public String getLoanType() {
+    public LoanType getLoanType() {
         return loanType;
     }
 
-    public void setLoanType(String loanType) {
+    public void setLoanType(LoanType loanType) {
         this.loanType = loanType;
     }
 
@@ -87,12 +86,12 @@ public class Loan implements Payable {
 
     @Override
     public void pay(BigDecimal payment) throws NegativeTransferAmountException, OverdraftException {
-        if (amountPayed.add(payment).compareTo(totalAmount) >= 0 && accountFrom.getBalance().subtract(payment).compareTo(BigDecimal.ZERO) >= 0) {
-            accountFrom.deposit(payment);
+        if (amountPayed.add(payment).compareTo(totalAmount) >= 0 && account.getBalance().subtract(payment).compareTo(BigDecimal.ZERO) >= 0) {
+            account.deposit(payment);
             amountPayed = amountPayed.add(payment);
         } else if (amountPayed.add(payment).compareTo(totalAmount) < 0) {
             throw new NegativeTransferAmountException("Payment amount is negative");
-        } else if (accountFrom.getBalance().subtract(payment).compareTo(BigDecimal.ZERO) < 0) {
+        } else if (account.getBalance().subtract(payment).compareTo(BigDecimal.ZERO) < 0) {
             throw new OverdraftException("Payment is greater than remaining balance");
         }
     }

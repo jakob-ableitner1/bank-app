@@ -1,10 +1,9 @@
 package com.solvd.bankapp;
 
 import com.solvd.bankapp.account.Account;
-import com.solvd.bankapp.account.CheckingAccount;
-import com.solvd.bankapp.account.SavingsAccount;
 import com.solvd.bankapp.exception.NegativeAgeException;
 import com.solvd.bankapp.location.Address;
+import com.solvd.bankapp.location.State;
 import com.solvd.bankapp.menu.*;
 import com.solvd.bankapp.profile.MemberProfile;
 import com.solvd.bankapp.profile.Profile;
@@ -17,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -25,13 +25,25 @@ public class App {
     private static final Logger LOGGER = LogManager.getLogger(App.class);
     private static final ProfileSearch profileSearch = new ProfileSearch();
     static IMenu startMenu = new StartMenu();
-    static IMenu startMemberMenu = new StartMemberMenu();
-    static IMenu signInMenu = new SignInMenu();
     static IMenu memberMenu = new MemberMenu();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Set<Profile> profiles = PrepopulateData.prepopulateProfiles();
+
+        IMenu startMemberMenu = (lambdaScanner) -> {
+            LOGGER.info("Log In - option 0\nMember Sign Up - option 1\nQuit - option 2");
+            String input = lambdaScanner.nextLine();
+            return new String[]{input};
+        };
+
+        IMenu signInMenu = (lambdaScanner) -> {
+            LOGGER.info("enter username");
+            String username = lambdaScanner.nextLine();
+            LOGGER.info("enter password");
+            String password = lambdaScanner.nextLine();
+            return new String[]{username, password};
+        };
 
         try{
             boolean exitMenu = false;
@@ -39,7 +51,7 @@ public class App {
                 int input = Integer.parseInt(startMenu.getInput(scanner)[0]);
                 switch (input) {
                     case 0:
-                        memberSignInMenu(profiles, scanner);
+                        memberSignInMenu(profiles, scanner, startMemberMenu, signInMenu);
                         continue;
                     case 1:
                         exitMenu = true;
@@ -55,7 +67,7 @@ public class App {
         }
     }
 
-    public static void memberSignInMenu(Set<Profile> profiles, Scanner scanner) {
+    public static void memberSignInMenu(Set<Profile> profiles, Scanner scanner, IMenu startMemberMenu, IMenu signInMenu) {
 
         boolean hasTerminatedMenu = false;
 
@@ -86,15 +98,6 @@ public class App {
                     LOGGER.info("Input not valid. Please try again");
             }
         }
-    }
-
-    public static MemberProfile findMember(MemberProfile[] members, String username, String password) {
-        for (MemberProfile member : members) {
-            if (username.equals(member.getId()) && password.equals(member.getPassword())) {
-                return member;
-            }
-        }
-        return null;
     }
 
     public static void memberMenu(MemberProfile member, Scanner scanner) {
@@ -128,8 +131,15 @@ public class App {
 
     public static void changeAddress(Profile profile, Scanner scanner) {
         IMenu changeAddressMenu = new ChangeAddressMenu();
-        String[] addressValues = changeAddressMenu.getInput(scanner);
-        profile.setAddress(new Address(addressValues[0], addressValues[1], addressValues[2], Integer.parseInt(addressValues[3]), addressValues[4]));
+        String[] addressInput = changeAddressMenu.getInput(scanner);
+
+        State inputState = State.valueOf(addressInput[1].toUpperCase());
+
+        if (inputState != null){
+            profile.setAddress(new Address(addressInput[0], inputState, addressInput[2], Integer.parseInt(addressInput[3]), addressInput[4]));
+        } else {
+            LOGGER.info("State is not valid");
+        }
     }
 
     public static void transferMoney(MemberProfile member, Scanner scanner) {
@@ -160,10 +170,20 @@ public class App {
         String[] input = createMemberProfileMenu.getInput(scanner);
         String[] addressInput = changeAddressMenu.getInput(scanner);
 
-        Address address = new Address(addressInput[0], addressInput[1], addressInput[2], Integer.parseInt(addressInput[3]), addressInput[4]);
+        State inputState = State.valueOf(addressInput[1].toUpperCase());
+        Address address = null;
+
+        if (inputState != null){
+            address = new Address(addressInput[0], inputState, addressInput[2], Integer.parseInt(addressInput[3]), addressInput[4]);
+        } else {
+            LOGGER.info("State is not valid");
+        }
 
         try {
-            profiles.add(new MemberProfile(input[0], input[1], input[2], Integer.parseInt(input[3]), address));
+            Profile memberProfile = new MemberProfile(input[0], input[1], input[2]);
+            memberProfile.setAge(Integer.parseInt(input[3]));
+            memberProfile.setAddress(address);
+            profiles.add(memberProfile);
         } catch (NegativeAgeException e) {
             LOGGER.info("Age can't be negative");
         }

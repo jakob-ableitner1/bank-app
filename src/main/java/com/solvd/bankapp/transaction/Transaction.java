@@ -9,6 +9,8 @@ public abstract class Transaction {
     private Account toAccount;
     private BigDecimal amount;
 
+    public Transaction(){}
+
     public Transaction(Account fromAccount, Account toAccount, BigDecimal amount) {
         this.fromAccount = fromAccount;
         this.toAccount = toAccount;

@@ -11,6 +11,10 @@ public class AccountMoneyTransfer extends Transaction {
 
     private static final Logger LOGGER = LogManager.getLogger(AccountMoneyTransfer.class);
 
+    public AccountMoneyTransfer(){
+        super();
+    }
+
     public AccountMoneyTransfer(Account fromAccount, Account toAccount, BigDecimal amount) {
         super(fromAccount, toAccount, amount);
     }
@@ -24,7 +28,7 @@ public class AccountMoneyTransfer extends Transaction {
                 LOGGER.info("Money transfer completed");
             }
         } catch (OverdraftException e) {
-            LOGGER.info("Transaction unsuccessful. Not enough funds in account.");
+            LOGGER.info(e.getMessage());
         }
     }
 }

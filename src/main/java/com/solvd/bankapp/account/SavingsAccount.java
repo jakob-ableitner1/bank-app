@@ -1,5 +1,6 @@
 package com.solvd.bankapp.account;
 
+import com.solvd.bankapp.exception.OverdraftException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,15 +9,18 @@ import java.math.BigDecimal;
 public class SavingsAccount extends Account {
 
     private static final Logger LOGGER = LogManager.getLogger(SavingsAccount.class);
-    public static final String ACCOUNT_TYPE = "Savings";
+    public static final AccountType ACCOUNT_TYPE = AccountType.SAVING;
+    public static final int MAX_MONTHLY_WITHDRAWALS = 5;
     private int monthlyWithdrawalsRemaining;
 
-    public SavingsAccount(int accountNumber, BigDecimal balance) {
-        super(accountNumber, balance);
+    public SavingsAccount(){}
+
+    public SavingsAccount(BigDecimal balance) {
+        super(balance);
         resetMonthlyWithdrawals();
     }
 
-    public static String getAccountType() {
+    public static AccountType getAccountType() {
         return ACCOUNT_TYPE;
     }
 
@@ -34,9 +38,8 @@ public class SavingsAccount extends Account {
             super.setBalance(super.getBalance().subtract(amount));
             monthlyWithdrawalsRemaining--;
             return true;
-        } else if (monthlyWithdrawalsRemaining > 0) {
-            LOGGER.info("Not enough funds in account " + super.getAccountNumber());
-            return false;
+        } else if (super.getBalance().subtract(amount).signum() < 0) {
+            throw new OverdraftException("Overdraft has occured");
         } else {
             LOGGER.info("Monthly withdrawal limit exceeded");
             return false;
@@ -44,7 +47,7 @@ public class SavingsAccount extends Account {
     }
 
     public void resetMonthlyWithdrawals(){
-        monthlyWithdrawalsRemaining = 5;
+        monthlyWithdrawalsRemaining = MAX_MONTHLY_WITHDRAWALS;
     }
     @Override
     public String toString() {

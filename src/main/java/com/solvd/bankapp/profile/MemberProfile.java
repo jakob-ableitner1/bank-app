@@ -15,14 +15,10 @@ public class MemberProfile extends Profile {
     private static final Logger LOGGER = LogManager.getLogger(MemberProfile.class);
     private Set<Account> accounts;
 
-    public MemberProfile(String name, String username, String password, int age, Address address, Set<Account> accounts) throws NegativeAgeException {
-        super(name, username, password, age, address);
-        this.accounts = accounts;
-    }
+    public MemberProfile(){}
 
-    public MemberProfile(String name, String username, String password, int age, Address address) throws NegativeAgeException {
-        super(name, username, password, age, address);
-        accounts = new HashSet<>();
+    public MemberProfile(String name, String username, String password){
+        super(name, username, password);
     }
 
     public Set<Account> getAccounts() {

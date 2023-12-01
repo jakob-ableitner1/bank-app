@@ -11,6 +11,8 @@ public class Check extends Transaction {
 
     private static final Logger LOGGER = LogManager.getLogger(Check.class);
 
+    public Check(){}
+
     public Check(Account fromAccount, Account toAccount, BigDecimal amount) {
         super(fromAccount, toAccount, amount);
     }

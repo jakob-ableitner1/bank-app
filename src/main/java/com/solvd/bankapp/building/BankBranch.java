@@ -6,9 +6,10 @@ import com.solvd.bankapp.location.Address;
 public class BankBranch {
     private Address address;
     private String phoneNumber;
-    private int branchNumber;
 
-    public BankBranch(Address address, String phoneNumber, int branchNumber) throws PhoneNumberException {
+    public BankBranch(){}
+
+    public BankBranch(Address address, String phoneNumber) throws PhoneNumberException {
 
         if (phoneNumber.length() != 10) {
             throw new PhoneNumberException("Phone number is not the correct length");
@@ -16,7 +17,6 @@ public class BankBranch {
 
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.branchNumber = branchNumber;
     }
 
     public Address getAddress() {
@@ -33,14 +33,6 @@ public class BankBranch {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public int getBranchNumber() {
-        return branchNumber;
-    }
-
-    public void setBranchNumber(int branchNumber) {
-        this.branchNumber = branchNumber;
     }
 
     @Override

@@ -3,52 +3,31 @@ package com.solvd.bankapp.profile;
 import com.solvd.bankapp.exception.NegativeAgeException;
 import com.solvd.bankapp.location.Address;
 
+import java.util.UUID;
+
 public abstract class Profile {
-    private static int numberOfProfiles = 1;
+    public final UUID id;
     private String name;
-    private int id;
     private String username;
     private String password;
     private int age;
     private Address address;
 
-    public Profile(String name, String username, String password, int age, Address address) throws NegativeAgeException {
+    {
+        id = UUID.randomUUID();
+    }
+
+    public Profile() {
+    }
+
+    public Profile(String name, String username, String password) throws NegativeAgeException {
         this.name = name;
-        this.id = numberOfProfiles;
         this.username = username;
         this.password = password;
-        this.address = address;
-
-        if (age >= 0) {
-            this.age = age;
-        } else {
-            throw new NegativeAgeException("Age cannot be set to a negative value");
-        }
-
-        numberOfProfiles++;
     }
 
-    public Profile(String name, String username, String password, int age) throws NegativeAgeException {
-        this.name = name;
-        this.id = numberOfProfiles;
-        this.username = username;
-        this.password = password;
-
-        if (age >= 0) {
-            this.age = age;
-        } else {
-            throw new NegativeAgeException("Age cannot be set to a negative value");
-        }
-
-        numberOfProfiles--;
-    }
-
-    public static int getNumberOfProfiles() {
-        return numberOfProfiles;
-    }
-
-    public static void setNumberOfProfiles(int numberOfProfiles) {
-        Profile.numberOfProfiles = numberOfProfiles;
+    public UUID getId() {
+        return id;
     }
 
     public String getName() {
@@ -57,14 +36,6 @@ public abstract class Profile {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getUsername() {

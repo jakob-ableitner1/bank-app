@@ -27,10 +27,10 @@ public class ProfileSearch implements ISearch<Profile> {
             }
 
         } else if ("id".equals(searchType)) {
-            int id = Integer.parseInt(searchValues[0]);
+            String id = searchValues[0];
 
             for (Profile profile : profiles) {
-                if (id == profile.getId()) {
+                if (id.equals(profile.getId())) {
                     return new Profile[]{profile};
                 }
                 LOGGER.info("No profiles with id: " + id);

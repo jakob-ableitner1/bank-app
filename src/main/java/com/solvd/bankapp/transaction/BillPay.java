@@ -17,12 +17,12 @@ public class BillPay implements Payable {
     private String frequency;
     private String details;
 
-    public BillPay(Account fromAccount, String toAccountNumber, BigDecimal amount, String frequency, String details) {
+    public BillPay(){}
+
+    public BillPay(Account fromAccount, String toAccountNumber, BigDecimal amount) {
         this.fromAccount = fromAccount;
         this.toAccountNumber = toAccountNumber;
         this.amount = amount;
-        this.frequency = frequency;
-        this.details = details;
     }
 
     public Account getFromAccountNumber() {

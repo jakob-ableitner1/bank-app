@@ -1,18 +1,21 @@
 package com.solvd.bankapp.account;
 
 import com.solvd.bankapp.exception.OverdraftException;
+import com.solvd.bankapp.transaction.Check;
 
 import java.math.BigDecimal;
 
 public class CheckingAccount extends Account {
 
-    public final static String ACCOUNT_TYPE = "Checking";
+    public final static AccountType ACCOUNT_TYPE = AccountType.CHECKING;
 
-    public CheckingAccount(int accountNumber, BigDecimal balance) {
-        super(accountNumber, balance);
+    public CheckingAccount(){}
+
+    public CheckingAccount(BigDecimal balance) {
+        super(balance);
     }
 
-    public static String getAccountType() {
+    public static AccountType getAccountType() {
         return ACCOUNT_TYPE;
     }
 

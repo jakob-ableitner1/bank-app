@@ -9,10 +9,10 @@ public class AccountSearch implements ISearch<Account> {
     @Override
     public Account[] search(Set<Account> accounts, String[] searchValues, String searchType) {
         if ("id".equals(searchType)) {
-            int id = Integer.parseInt(searchValues[0]);
+            String id = searchValues[0];
 
             for (Account account : accounts) {
-                if (id == account.getAccountNumber()) {
+                if (id.equals(account.getAccountNumber().toString())) {
                     return new Account[]{account};
                 }
             }

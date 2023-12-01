@@ -13,10 +13,10 @@ public class EmployeeProfile extends Profile {
     private String jobTitle;
     private BigDecimal wage;
 
-    public EmployeeProfile(String name, String username, String password, int age, Address address, String jobTitle, BigDecimal wage) {
-        super(name, username, password, age, address);
-        this.jobTitle = jobTitle;
-        this.wage = wage;
+    public EmployeeProfile(){}
+
+    public EmployeeProfile(String name, String username, String password){
+        super(name, username, password);
     }
 
     public String getJobTitle() {

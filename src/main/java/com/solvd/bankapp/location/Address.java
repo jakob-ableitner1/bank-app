@@ -2,14 +2,14 @@ package com.solvd.bankapp.location;
 
 public class Address {
     private String streetLine;
-    private String state;
+    private State state;
     private String city;
     private int zipCode;
     private String country;
 
     public Address(){}
 
-    public Address(String streetLine, String state, String city, int zipCode, String country) {
+    public Address(String streetLine, State state, String city, int zipCode, String country) {
         this.streetLine = streetLine;
         this.state = state;
         this.city = city;
@@ -25,11 +25,11 @@ public class Address {
         this.streetLine = streetLine;
     }
 
-    public String getState() {
+    public State getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(State state) {
         this.state = state;
     }
 
