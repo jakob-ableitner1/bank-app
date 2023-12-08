@@ -7,20 +7,13 @@ import java.util.UUID;
 
 public abstract class Account {
 
-    public final UUID ACCOUNT_NUMBER;
+    public final UUID ACCOUNT_NUMBER = UUID.randomUUID();
     private BigDecimal balance;
 
-    {
-        ACCOUNT_NUMBER = UUID.randomUUID();
-    }
-
-    public Account(){
-        UUID accountNumber = UUID.randomUUID();
-    }
+    public Account(){}
 
     public Account(BigDecimal balance) {
         this.balance = balance;
-        UUID accountNumber = UUID.randomUUID();
     }
 
     public UUID getAccountNumber() {

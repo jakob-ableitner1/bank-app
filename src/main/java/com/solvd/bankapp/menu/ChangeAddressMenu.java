@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Scanner;
 
 public class ChangeAddressMenu implements IMenu{
-    Logger LOGGER = LogManager.getLogger(ChangeAddressMenu.class);
+    private final static Logger LOGGER = LogManager.getLogger(ChangeAddressMenu.class);
 
     @Override
     public String[] getInput(Scanner scanner) {

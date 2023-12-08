@@ -2,6 +2,7 @@ package com.solvd.bankapp;
 
 import com.solvd.bankapp.account.Account;
 import com.solvd.bankapp.exception.NegativeAgeException;
+import com.solvd.bankapp.exception.ProfileNotFoundException;
 import com.solvd.bankapp.location.Address;
 import com.solvd.bankapp.location.State;
 import com.solvd.bankapp.menu.*;
@@ -16,10 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 public class App {
 
@@ -29,16 +27,16 @@ public class App {
     static IMenu memberMenu = new MemberMenu();
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
         Set<Profile> profiles = PrepopulateData.prepopulateProfiles();
+        Scanner scanner = new Scanner(System.in);
 
-        IMenu startMemberMenu = (lambdaScanner) -> {
+        IMenu startMenuLambda = (lambdaScanner) -> {
             LOGGER.info("Log In - option 0\nMember Sign Up - option 1\nQuit - option 2");
             String input = lambdaScanner.nextLine();
             return new String[]{input};
         };
 
-        IMenu signInMenu = (lambdaScanner) -> {
+        IMenu signInMenuLambda = (lambdaScanner) -> {
             LOGGER.info("enter username");
             String username = lambdaScanner.nextLine();
             LOGGER.info("enter password");
@@ -46,48 +44,35 @@ public class App {
             return new String[]{username, password};
         };
 
-        try{
-            boolean exitMenu = false;
-            while (!exitMenu) {
-                int input = Integer.parseInt(startMenu.getInput(scanner)[0]);
-                switch (input) {
-                    case 0:
-                        memberSignInMenu(profiles, scanner, startMemberMenu, signInMenu);
-                        continue;
-                    case 1:
-                        exitMenu = true;
-                        continue;
-                    default:
-                        LOGGER.info("Invalid input");
-                }
-            }
-        } catch (Exception e){
-            System.out.println("error has occured");
-        } finally{
-            scanner.close();
-        }
+        startMenu(profiles, scanner, startMenuLambda, signInMenuLambda);
+        scanner.close();
     }
 
-    public static void memberSignInMenu(Set<Profile> profiles, Scanner scanner, IMenu startMemberMenu, IMenu signInMenu) {
+    public static void startMenu(Set<Profile> profiles, Scanner scanner, IMenu startMenu, IMenu signInMenu) {
 
         boolean hasTerminatedMenu = false;
 
         while (!hasTerminatedMenu) {
-            int input = Integer.parseInt(startMemberMenu.getInput(scanner)[0]);
+            int input = Integer.parseInt(startMenu.getInput(scanner)[0]);
             switch (input) {
                 case 0:
                     String[] credentials = signInMenu.getInput(scanner);
                     String username = credentials[0];
                     String password = credentials[1];
-                    Profile profile = profileSearch.search(profiles, new String[]{username, password}, "validation").get(0);
+                    Profile profile = null;
 
-                    if (profile != null) {
-                        LOGGER.info("Hello " + profile.getName());
-                        if (profile instanceof MemberProfile){
-                            memberMenu((MemberProfile) profile, scanner);
+                    try{
+                        profile = profileSearch.search(profiles, username, "validation");
+                        if (password.equals(profile.getPassword())) {
+                            LOGGER.info("Hello " + profile.getName());
+                            if (profile instanceof MemberProfile){
+                                memberMenu((MemberProfile) profile, scanner);
+                            }
+                        } else {
+                            LOGGER.info("Password is incorrect");
                         }
-                    } else {
-                        LOGGER.info("username or password is incorrect");
+                    } catch (ProfileNotFoundException e){
+                        LOGGER.info("Profile not found with username " + username);
                     }
                     continue;
                 case 1:
@@ -95,6 +80,8 @@ public class App {
                     continue;
                 case 2:
                     hasTerminatedMenu = true;
+                    LOGGER.info("Closing application");
+                    continue;
                 default:
                     LOGGER.info("Input not valid. Please try again");
             }
@@ -147,43 +134,36 @@ public class App {
         Set<Account> accounts = member.getAccounts();
 
         accounts.stream()
-                .filter(account -> account != null)
+                .filter(Objects::nonNull)
                 .forEach(account -> LOGGER.info("Account: " + account + ", Balance: " + account.getBalance()));
 
         IMenu transferMoneyMenu = new TransferMoneyMenu();
         String[] moneyTransferValues = transferMoneyMenu.getInput(scanner);
 
         AccountSearch accountSearch = new AccountSearch();
-        List<Account> fromAccount = accountSearch.search(accounts, new String[]{moneyTransferValues[0]}, "id");
-        List<Account> toAccount = accountSearch.search(accounts, new String[]{moneyTransferValues[1]}, "id");
+        Account fromAccount = accountSearch.search(accounts, moneyTransferValues[0], "id");
+        Account toAccount = accountSearch.search(accounts, moneyTransferValues[1], "id");
 
-        Transaction accountMoneyTransfer = new AccountMoneyTransfer(fromAccount.get(0), toAccount.get(0), BigDecimal.valueOf(Double.parseDouble(moneyTransferValues[2])));
+        Transaction accountMoneyTransfer = new AccountMoneyTransfer(fromAccount, toAccount, BigDecimal.valueOf(Double.parseDouble(moneyTransferValues[2])));
         accountMoneyTransfer.performTransaction();
     }
 
     public static void createMemberProfile(Set<Profile> profiles, Scanner scanner) {
         IMenu createMemberProfileMenu = new CreateMemberProfileMenu();
-        IMenu changeAddressMenu = new ChangeAddressMenu();
 
         String[] input = createMemberProfileMenu.getInput(scanner);
-        String[] addressInput = changeAddressMenu.getInput(scanner);
-
-        State inputState = State.valueOf(addressInput[1].toUpperCase());
-        Address address = null;
-
-        if (inputState != null){
-            address = new Address(addressInput[0], inputState, addressInput[2], Integer.parseInt(addressInput[3]), addressInput[4]);
-        } else {
-            LOGGER.info("State is not valid");
-        }
 
         try {
             Profile memberProfile = new MemberProfile(input[0], input[1], input[2]);
             memberProfile.setAge(Integer.parseInt(input[3]));
-            memberProfile.setAddress(address);
-            profiles.add(memberProfile);
+            changeAddress(memberProfile, scanner);
+
+            if (memberProfile != null){
+                profiles.add(memberProfile);
+            }
+            LOGGER.debug("member profile added with details " + memberProfile);
         } catch (NegativeAgeException e) {
-            LOGGER.info("Age can't be negative");
+            LOGGER.info("Age can't be negative. Profile was not created.");
         }
     }
 }

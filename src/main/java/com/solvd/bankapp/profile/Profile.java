@@ -3,22 +3,18 @@ package com.solvd.bankapp.profile;
 import com.solvd.bankapp.exception.NegativeAgeException;
 import com.solvd.bankapp.location.Address;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public abstract class Profile {
-    public final UUID id;
+    public final UUID id = UUID.randomUUID();
     private String name;
     private String username;
     private String password;
     private int age;
     private Address address;
 
-    {
-        id = UUID.randomUUID();
-    }
-
-    public Profile() {
-    }
+    public Profile() {}
 
     public Profile(String name, String username, String password) throws NegativeAgeException {
         this.name = name;
@@ -75,4 +71,19 @@ public abstract class Profile {
     }
 
     public abstract void profileHelp();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Profile profile = (Profile) o;
+
+        return username != null ? username.equals(profile.username) : profile.username == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return username != null ? username.hashCode() : 0;
+    }
 }

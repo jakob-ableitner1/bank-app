@@ -4,5 +4,5 @@ import java.util.List;
 import java.util.Set;
 
 public interface ISearch<T> {
-    List<T> search(Set<T> valuesToSearch, String[] searchValues, String searchType);
+    T search(Set<T> valuesToSearch, String searchValue, String searchType);
 }

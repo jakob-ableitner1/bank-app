@@ -36,19 +36,6 @@ public class MemberProfile extends Profile {
 
     @Override
     public String toString() {
-        return "{\"Name\" : " + super.getName() + ", \"Id\" : " + super.getId() + ", \"Password\" : " + super.getPassword() + ", \"Address\" : " + super.getAddress().toString() + ", \"Accounts\" : " + accounts.toString() + "}";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MemberProfile that = (MemberProfile) o;
-        return Objects.equals(accounts, that.accounts);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(accounts);
+        return "{\"Name\" : " + super.getName() + ", \"Id\" : " + super.getId() + ", \"Password\" : " + super.getPassword() + ", \"Address\" : " + super.getAddress() + ", \"Accounts\" : " + accounts + "}";
     }
 }

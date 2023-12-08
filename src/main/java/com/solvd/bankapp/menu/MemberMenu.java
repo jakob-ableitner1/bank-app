@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Scanner;
 
 public class MemberMenu implements IMenu{
-    Logger LOGGER = LogManager.getLogger(MemberMenu.class);
+    private final static Logger LOGGER = LogManager.getLogger(MemberMenu.class);
 
     @Override
     public String[] getInput(Scanner scanner) {
